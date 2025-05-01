@@ -1,31 +1,76 @@
-<h1>Artikli</h1>
-<h1>Administracija</h1>
-<table>
-  <thead>
-    <tr>
-      <td>Kategorija</td>
-      <td>Artikl</td>
-      <td>Opis</td>
-      <td>Cijena</td>
-      <td>Aktivno</td>
-      <td>U skladištu</td>
-      <td>Mj. jedinica</td>
-      <td>Kreirano</td>
-      <td>Ažurirano</td>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let a of artikli">
-      <td>{{a.category}}</td>
-      <td>{{a.name}}</td>
-      <td>{{a.description}}</td>
-      <td>{{a.price}}</td>
-      <td>{{a.active}}</td>
-      <td>{{a.in_stock}}</td>
-      <td>{{a.unit}}</td>
-      <td>{{a.created_at}}</td>
-      <td>{{a.last_update}}</td>
-      <td></td>
-    </tr>
-  </tbody>
-</table>
+<div class="header">
+  <div class="leftButtons">
+    <div class="headerButton" (click)="clearFilter()">Očisti filter</div>
+    <div class="headerButton">Pretraži</div>
+  </div>
+  <div class="title">{{title}}</div>
+  <div class="rightButtons">
+    <div class="headerButton" (click)="title = 'Admin'">Admin</div>
+    <div class="headerButton" (click)="title = 'Korisnik'">Korisnik</div>
+  </div>
+</div>
+
+<div class="tableWrap">
+  <table>
+    <thead>
+      <tr class="headRow">
+        <td class="headTd">
+          <div class="filterIcon" (click)="showFilter = !showFilter" (mouseenter)="toggleTooltip(true, $event, 'Filter')"
+            (mousemove)="toggleTooltip(false, $event)" (mouseleave)="toggleTooltip(false)">
+            <svg viewBox="0 0 100 100" fill="white" xmlns="http://www.w3.org/2000/svg">
+              <g>
+                <path d="M51.0965 59.9333C50.2963 60.9938 48.7037 60.9938 47.9035 59.9333L16.418 18.2046C15.4237 16.8869 16.3637 15 18.0145 15L80.9855 15C82.6363 15 83.5763 16.8869 82.582 18.2046L51.0965 59.9333Z" fill="" />
+                <path d="M39.3543 47.2186C39.3543 46.114 40.2497 45.2186 41.3543 45.2186H57.6458C58.7503 45.2186 59.6457 46.114 59.6457 47.2186V81.5713C59.6457 83.103 57.9945 84.0662 56.6612 83.3122L40.3697 74.0989C39.7422 73.744 39.3543 73.0789 39.3543 72.358V47.2186Z" fill="" />
+              </g>
+            </svg>
+          </div>
+        <td *ngFor="let i of tableInfo" class="headTd" [ngStyle]="{'min-width': i.colWidth}">
+          <div class="sortFlex" (click)="sortArticles(i.colName)">
+            <div>{{ i.colDesc }}</div>
+            <div class="sortIcon">
+              @if (sortCol.colName === i.colName && sortCol.direction) {<div><i class="fa-solid fa-arrow-down"></i></div>}
+              @else if (sortCol.colName === i.colName && !sortCol.direction) {<div><i class="fa-solid fa-arrow-up"></i></div>}
+              @else if (sortCol.colName !== i.colName) {<div><i class="fa-solid fa-arrows-up-down"></i></div>}
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr class="filterRow" *ngIf="showFilter">
+        <td class="headTd"></td>
+        <td *ngFor="let i of tableInfo" class="headTd" [ngStyle]="{'min-width': i.colWidth}">
+          @if(i.colName === 'created_at' || i.colName === 'last_update') {
+            <input [(ngModel)]="filterData[i.colName]" class="dateInput" type="date">
+          } @else {
+            <input [(ngModel)]="filterData[i.colName]" class="textInput" placeholder="..." type="text">
+          }
+        </td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let a of artikli" class="bodyRow">
+        <td class="bodyTd" *ngIf="title==='Admin'">
+          <div class="trash" (click)="removeArticle(a.id)">
+            <svg width="100" height="100" viewBox="0 0 100 100" fill="#E74C3C" xmlns="http://www.w3.org/2000/svg">
+              <g id="trash">
+                <path id="lid" d="M10 17C10 14.7909 11.7909 13 14 13H41V10C41 7.79086 42.7909 6 45 6H50H55C57.2091 6 59 7.79086 59 10V13H86C88.2091 13 90 14.7909 90 17V19C90 21.2091 88.2091 23 86 23H14C11.7909 23 10 21.2091 10 19V17Z"/>
+                <path id="bin" fill-rule="evenodd" clip-rule="evenodd" d="M14.3195 28C11.9895 28 10.1526 29.9836 10.3313 32.3068L15.7159 89.3068C15.8762 91.3908 17.614 93 19.7041 93H80.2959C82.386 93 84.1238 91.3908 84.2841 89.3068L89.6687 32.3068C89.8474 29.9836 88.0105 28 85.6805 28H14.3195ZM71.8602 38.0099C69.6565 37.8558 67.7451 39.5174 67.591 41.7211L65.01 78.631C64.8559 80.8348 66.5174 82.7462 68.7212 82.9003L70.7163 83.0398C72.9201 83.1939 74.8315 81.5323 74.9856 79.3286L77.5666 42.4187C77.7207 40.2149 76.0591 38.3035 73.8554 38.1494L71.8602 38.0099ZM23.0099 42.4187C22.8558 40.215 24.5174 38.3035 26.7211 38.1494L28.7163 38.0099C30.92 37.8558 32.8314 39.5174 32.9855 41.7211L35.5665 78.631C35.7206 80.8348 34.0591 82.7462 31.8553 82.9003L29.8602 83.0398C27.6564 83.1939 25.745 81.5323 25.5909 79.3286L23.0099 42.4187ZM45.2882 42.0249C45.2882 39.8157 47.0791 38.0249 49.2882 38.0249H51.2882C53.4973 38.0249 55.2882 39.8157 55.2882 42.0249V79.0249C55.2882 81.234 53.4973 83.0249 51.2882 83.0249H49.2882C47.0791 83.0249 45.2882 81.234 45.2882 79.0249V42.0249Z"/>
+              </g>
+            </svg>                
+          </div>
+        </td>
+        <td class="bodyTd" *ngIf="title==='Korisnik'"></td>
+        <td *ngFor="let i of tableInfo" class="bodyTd" [ngStyle]="{'text-align': i.textAlign}">
+          @if(i.colName === 'created_at' || i.colName === 'last_update') {
+            <div>{{ a[i.colName] | date: 'short'}}</div>
+          } @else {
+            <div>{{ a[i.colName] }}</div>
+          }
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div *ngIf="showTooltip" class="customTooltip" [ngStyle]="tooltipPosition">
+  <div class="message" [innerHTML]="tooltipMessage"></div>
+</div>

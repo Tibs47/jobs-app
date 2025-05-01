@@ -1,1 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+    --primary-color: #11254C;
+    --secondary-color: #3498DB;
+    --highlight-color: #198754;
+    --accent-light: #baf2c7;
+    --red-color: #ff6868;
+    --green-color: #1cc540;
+    --white: #ffffff;
+    --black: #000000;
+    --gray: #f4f4f4;
+    --dark-transparent: #11254ce4;
+    --highlight-transparent: #f5fbff;
+    --tooltip-background: #6d6d6d;
+    --new-cell: #d9f4ff;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
