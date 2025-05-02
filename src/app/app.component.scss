@@ -4,6 +4,7 @@
     color: var(--white);
     align-items: center;
     justify-content: space-between;
+
     .headerButton {
         display: flex;
         align-items: center;
@@ -17,21 +18,34 @@
         transition: background-color 0.1s ease-in-out;
         cursor: pointer;
     }
+
     .headerButton:hover {
         background-color: var(--highlight-color);
     }
+
+    .cancel:hover {
+        color: var(--red-color);
+        background-color: var(--white);
+    }
+
+    .cancel {
+        background-color: var(--red-color);
+    }
+
     .leftButtons {
         display: flex;
         justify-content: left;
-        width: 25vw;
+        width: 30vw;
         margin: 0 2vw;
     }
+
     .rightButtons {
         display: flex;
         justify-content: right;
-        width: 25vw;
+        width: 30vw;
         margin: 0 2vw;
     }
+
     .title {
         display: flex;
         justify-content: center;
@@ -55,11 +69,13 @@
 table {
     border-collapse: collapse;
     width: 100%;
+
     thead {
         position: sticky;
         top: 0;
         z-index: 9000;
     }
+
     .headTd {
         overflow: hidden;
         box-sizing: border-box;
@@ -70,24 +86,30 @@ table {
         color: white;
         height: 40px;
         cursor: default;
+
         .filterIcon {
             display: flex;
             align-items: center;
             width: 28px;
+
             svg {
                 transition: fill 0.2s ease-in-out;
             }
         }
+
         .filterIcon:hover {
             cursor: pointer;
+
             svg {
                 fill: var(--primary-color);
             }
         }
+
         .sortFlex {
             display: flex;
             justify-content: space-between;
             cursor: pointer;
+
             .sortIcon {
                 display: flex;
                 justify-content: center;
@@ -96,19 +118,27 @@ table {
                 transition: color 0.2s ease-in-out;
             }
         }
+
         .textInput {
             background: none;
             outline: 0;
             border: 0;
             color: white;
-            width: 100%;
+            width:90%;
             padding: 0;
             margin: 0;
             overflow: visible;
+            border-bottom: 1px solid var(--gray);
         }
+
         .textInput::placeholder {
             color: white;
         }
+
+        .textInput:focus {
+            border-bottom: 1px solid #3bd5ff;
+        }
+
         .dateInput {
             background: none;
             outline: 0;
@@ -119,10 +149,22 @@ table {
             overflow: visible;
         }
     }
-    .headTd:hover { 
+
+    .headTd:hover {
         .sortIcon {
             color: var(--primary-color);
         }
+    }
+
+    .icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .icon:hover {
+        cursor: pointer;
+        color: var(--highlight-color);
     }
 
     .bodyTd {
@@ -132,6 +174,7 @@ table {
         border: 0;
         background-color: var(--white);
         height: 40px;
+
         .trash {
             display: flex;
             justify-content: center;
@@ -139,20 +182,20 @@ table {
             height: 28px;
             pointer-events: all;
             cursor: pointer;
-    
+
             svg {
                 width: 22px;
                 height: 28px;
                 fill: var(--red-color);
                 transition: all 0.05s ease-in-out 0.5s;
-    
+
                 #lid {
                     transition: transform 0.25s ease-out;
                     transform: translate(0px, 0pc) rotate(0deg);
-    
+
                 }
             }
-    
+
             svg:hover {
                 #lid {
                     transform: translate(-3px, -1px) rotate(-9deg);
@@ -175,10 +218,11 @@ table {
     background-color: var(--tooltip-background);
     color: var(--white);
     border-radius: 5px;
-    line-height: 20px;
-  
+    line-height: 10px;
+    font-size: 12px;
+
     .message {
-      position: relative;
-      z-index: 9999;
+        position: relative;
+        z-index: 9999;
     }
-  }
+}

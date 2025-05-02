@@ -1,12 +1,14 @@
 <div class="header">
   <div class="leftButtons">
     <div class="headerButton" (click)="clearFilter()">Očisti filter</div>
-    <div class="headerButton">Pretraži</div>
+    <div class="headerButton" (click)="filterArticles()">Pretraži</div>
+    <div class="headerButton" (click)="showNewRow = !showNewRow" *ngIf="!showNewRow && title === 'Admin'">Dodaj artikl</div>
+    <div class="headerButton cancel" (click)="showNewRow = !showNewRow" *ngIf="showNewRow && title === 'Admin'">Odustani</div>
   </div>
   <div class="title">{{title}}</div>
   <div class="rightButtons">
-    <div class="headerButton" (click)="title = 'Admin'">Admin</div>
-    <div class="headerButton" (click)="title = 'Korisnik'">Korisnik</div>
+    <div class="headerButton" (click)="toggleRoles('A')">Admin</div>
+    <div class="headerButton" (click)="toggleRoles('K')">Korisnik</div>
   </div>
 </div>
 
@@ -15,8 +17,11 @@
     <thead>
       <tr class="headRow">
         <td class="headTd">
-          <div class="filterIcon" (click)="showFilter = !showFilter" (mouseenter)="toggleTooltip(true, $event, 'Filter')"
-            (mousemove)="toggleTooltip(false, $event)" (mouseleave)="toggleTooltip(false)">
+          <div class="filterIcon" (click)="showFilter = !showFilter" 
+            (mouseenter)="toggleTooltip(true, $event, 'Filter')"
+            (mousemove)="toggleTooltip(false, $event)" 
+            (mouseleave)="toggleTooltip(false)"
+          >
             <svg viewBox="0 0 100 100" fill="white" xmlns="http://www.w3.org/2000/svg">
               <g>
                 <path d="M51.0965 59.9333C50.2963 60.9938 48.7037 60.9938 47.9035 59.9333L16.418 18.2046C15.4237 16.8869 16.3637 15 18.0145 15L80.9855 15C82.6363 15 83.5763 16.8869 82.582 18.2046L51.0965 59.9333Z" fill="" />
@@ -24,7 +29,7 @@
               </g>
             </svg>
           </div>
-        <td *ngFor="let i of tableInfo" class="headTd" [ngStyle]="{'min-width': i.colWidth}">
+        <td *ngFor="let i of tableInfo" class="headTd" [ngStyle]="{'min-width': i.colWidth, 'display': (i.admin && title === 'Korisnik') ? 'none' : 'table-cell'}">
           <div class="sortFlex" (click)="sortArticles(i.colName)">
             <div>{{ i.colDesc }}</div>
             <div class="sortIcon">
@@ -36,12 +41,30 @@
         </td>
       </tr>
       <tr class="filterRow" *ngIf="showFilter">
-        <td class="headTd"></td>
-        <td *ngFor="let i of tableInfo" class="headTd" [ngStyle]="{'min-width': i.colWidth}">
+        <td class="headTd icon" (click)="filterArticles()"
+          (mouseenter)="toggleTooltip(true, $event, 'Pretraži')"
+          (mousemove)="toggleTooltip(false, $event)" 
+          (mouseleave)="toggleTooltip(false)"
+        ><i class="fa-solid fa-magnifying-glass"></i></td>
+        <td *ngFor="let i of tableInfo" class="headTd" [ngStyle]="{'min-width': i.colWidth, 'display': (i.admin && title === 'Korisnik') ? 'none' : 'table-cell'}">
           @if(i.colName === 'created_at' || i.colName === 'last_update') {
             <input [(ngModel)]="filterData[i.colName]" class="dateInput" type="date">
           } @else {
-            <input [(ngModel)]="filterData[i.colName]" class="textInput" placeholder="..." type="text">
+            <input [(ngModel)]="filterData[i.colName]" class="textInput" type="text">
+          }
+        </td>
+      </tr>
+      <tr class="newRow" *ngIf="showNewRow">
+        <td class="headTd icon" (click)="addArticle()"
+          (mouseenter)="toggleTooltip(true, $event, 'Dodaj')"
+          (mousemove)="toggleTooltip(false, $event)" 
+          (mouseleave)="toggleTooltip(false)"
+        ><i class="fa-solid fa-check"></i></td>
+        <td *ngFor="let i of tableInfo" class="headTd" [ngStyle]="{'min-width': i.colWidth, 'display': (i.admin && title === 'Korisnik') ? 'none' : 'table-cell'}">
+          @if(i.colName === 'created_at' || i.colName === 'last_update') {
+            <input [(ngModel)]="newRow[i.colName]" class="dateInput" type="date">
+          } @else {
+            <input [(ngModel)]="newRow[i.colName]" class="textInput" type="text">
           }
         </td>
       </tr>
@@ -49,7 +72,11 @@
     <tbody>
       <tr *ngFor="let a of artikli" class="bodyRow">
         <td class="bodyTd" *ngIf="title==='Admin'">
-          <div class="trash" (click)="removeArticle(a.id)">
+          <div class="trash" (click)="removeArticle(a.id, a.name)"
+            (mouseenter)="toggleTooltip(true, $event, 'Obriši')"
+            (mousemove)="toggleTooltip(false, $event)" 
+            (mouseleave)="toggleTooltip(false)"
+          >
             <svg width="100" height="100" viewBox="0 0 100 100" fill="#E74C3C" xmlns="http://www.w3.org/2000/svg">
               <g id="trash">
                 <path id="lid" d="M10 17C10 14.7909 11.7909 13 14 13H41V10C41 7.79086 42.7909 6 45 6H50H55C57.2091 6 59 7.79086 59 10V13H86C88.2091 13 90 14.7909 90 17V19C90 21.2091 88.2091 23 86 23H14C11.7909 23 10 21.2091 10 19V17Z"/>
@@ -59,7 +86,7 @@
           </div>
         </td>
         <td class="bodyTd" *ngIf="title==='Korisnik'"></td>
-        <td *ngFor="let i of tableInfo" class="bodyTd" [ngStyle]="{'text-align': i.textAlign}">
+        <td *ngFor="let i of tableInfo" class="bodyTd" [ngStyle]="{'text-align': i.textAlign, 'min-width': i.colWidth, 'display': (i.admin && title === 'Korisnik') ? 'none' : 'table-cell'}">
           @if(i.colName === 'created_at' || i.colName === 'last_update') {
             <div>{{ a[i.colName] | date: 'short'}}</div>
           } @else {
